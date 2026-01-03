@@ -1,8 +1,6 @@
 #!/bin/bash
 
 set -euxo pipefail
-useradd -d /home/skullbite -p dummy skullbite
-# usermod -p "$(echo "password" | mkpasswd -s)" skullbite 
 
 echo -e "\n[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
 packages="iwd \
