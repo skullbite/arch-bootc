@@ -1,15 +1,16 @@
-image_name := env("BUILD_IMAGE_NAME", "arch-bootc")
+image_name := env("BUILD_IMAGE_NAME", "arch-cosmic")
 image_tag := env("BUILD_IMAGE_TAG", "latest")
 base_dir := env("BUILD_BASE_DIR", ".")
 filesystem := env("BUILD_FILESYSTEM", "ext4")
 
-container_runtime := env("CONTAINER_RUNTIME", `command -v podman >/dev/null 2>&1 && echo podman || echo docker`)
+alias build := build-containerfile
+alias build-img := generate-bootable-image
 
 build-containerfile $image_name=image_name:
-    sudo {{container_runtime}} build -f Containerfile -t "${image_name}:latest" .
+    sudo podman build -t "${image_name}:latest" .
 
 bootc *ARGS:
-    sudo {{container_runtime}} run \
+    sudo podman run \
         --rm --privileged --pid=host \
         -it \
         -v /sys/fs/selinux:/sys/fs/selinux \
@@ -27,3 +28,19 @@ generate-bootable-image $base_dir=base_dir $filesystem=filesystem:
         fallocate -l 20G "${base_dir}/bootable.img"
     fi
     just bootc install to-disk --composefs-backend --via-loopback /data/bootable.img --filesystem "${filesystem}" --wipe --bootloader systemd
+
+run-vm:
+    podman run \
+        -it \
+        --replace \
+        --rm \
+        --name qemu \
+        -p 8006:8006 \
+        --device=/dev/kvm \
+        --device=/dev/net/tun \
+        --cap-add NET_ADMIN \
+        --cap-add NET_RAW \
+        -v "${PWD:-.}/qemu:/storage:Z" \
+        -v "${PWD:-.}/bootable.img:/boot.img:Z" \
+        --stop-timeout 120 \
+        docker.io/qemux/qemu
