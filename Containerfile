@@ -1,5 +1,5 @@
 FROM scratch as ctx
-COPY /sys-files /sys-files
+# COPY /sys-files /sys-files
 COPY /build.sh /build.sh
 
 FROM docker.io/archlinux/archlinux:latest
