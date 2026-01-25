@@ -12,8 +12,7 @@ packages="iwd \
     just \
     fastfetch \
     distrobox \
-    cosmic \
-    cosmic-greeter \
+    plasma \
     gvfs \
     sddm \
     base \
@@ -43,6 +42,6 @@ pacman -S --clean --noconfirm
 
 # rsync -rvK /ctx/sys-files /
 
-systemctl enable cosmic-greeter
+systemctl enable sddm
 systemctl enable iwd
 systemctl enable NetworkManager
