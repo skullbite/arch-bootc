@@ -13,6 +13,7 @@ packages="iwd \
     fastfetch \
     distrobox \
     plasma \
+    plasma-desktop \
     gvfs \
     sddm \
     base \
